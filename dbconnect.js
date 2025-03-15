@@ -14,7 +14,6 @@ const db = new Sequelize(
   }
 );
 
-
 (async () => {
   try {
     await db.authenticate();

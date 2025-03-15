@@ -1,13 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import dotenv from 'dotenv';
 import db from './dbconnect.js';
 import residentRoutes from './routes/residentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import officialRoutes from './routes/officialRoutes.js';
-
-dotenv.config();
 import officialRoutes from './routes/officialRoutes.js';
 
 dotenv.config();
@@ -22,9 +18,7 @@ app.use(cors({
 app.use('/api/residents', residentRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/officials', officialRoutes);
-app.use('/api/officials', officialRoutes);
 
-const PORT = process.env.PORT || 5003;
 const PORT = process.env.PORT || 5003;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

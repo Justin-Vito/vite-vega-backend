@@ -1,32 +1,13 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import db from '../dbconnect.js';
 
-const Officials = db.define('Officials', {
-  official_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  first_name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  last_name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-}, {
-  tableName: 'officials',
-  timestamps: false,
+export const Official = db.define('Official', {
+  official_id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+  first_name: { type: Sequelize.STRING, allowNull: false },
+  last_name: { type: Sequelize.STRING, allowNull: false },
+  middle_int: { type: Sequelize.STRING, defaultValue: "" },
+  birth_date: { type: Sequelize.DATE, defaultValue: null },
+  position: { type: Sequelize.STRING, allowNull: false },
+  email: { type: Sequelize.STRING, allowNull: false, unique: true },
+  password: { type: Sequelize.STRING, allowNull: false },
 });
-
-export default Officials;

@@ -2,6 +2,8 @@ import express from 'express';
 import Admin from '../models/Admin.js';
 import Announcement from '../models/Announcement.js';
 import bcrypt from 'bcryptjs';
+import { Official } from '../models/officialModel.js';
+import { Appointment } from '../models/appointmentModel.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../server.js';
 
@@ -78,6 +80,35 @@ router.get('/announcements', async (req, res) => {
     res.json(announcements);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+router.post('/create-official', async (req, res) => {
+  const { first_name, last_name, middle_int, birth_date, position, email, password } = req.body;
+  if (!first_name || !last_name || !position || !email || !password) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const official = await Official.create({
+      first_name, last_name, middle_int, birth_date, position, email, password: hashedPassword
+    });
+    res.status(201).json({ message: "Official created", official });
+  } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+router.get('/appointments', async (req, res) => {
+  try {
+    const appointments = await Appointment.findAll();
+    res.json(appointments);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 

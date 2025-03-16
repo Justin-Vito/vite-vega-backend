@@ -53,37 +53,62 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
 // Signup endpoint
 router.post('/signup', async (req, res) => {
-  console.log("Signup request received:", req.body);
+  console.log("Signup request body:", req.body);
+  const {
+    first_name,
+    last_name,
+    email,
+    password,
+    middle_int = "",
+    birth_date = null,
+    address = ""
+  } = req.body;
+  if (!first_name || !last_name || !email || !password) {
+    return res.status(400).json({ message: "Validation error" });
+  }
   try {
-    const { first_name, last_name, email, password, address, birth_date } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10); // Use bcrypt here
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newResident = await Resident.create({
       first_name,
       last_name,
+      middle_int,
+      birth_date,
+      address,
       email,
       password: hashedPassword,
-      address,
-      birth_date,
-      household_id: 1,
-      middle_int: req.body.middle_int || '',
-      ext: req.body.ext || '',
-      birth_place: req.body.birth_place || '',
-      age: req.body.age || 0,
-      gender: req.body.gender || '',
-      contact_num: req.body.contact_num || 'N/A',
-      civil_stat: req.body.civil_stat || '',
-      citizenship: req.body.citizenship || '',
-      occupation: req.body.occupation || '',
-      status: req.body.status || ''
+      household_id: 1, // Default or adjust
+      ext: "",
+      birth_place: "",
+      age: 0,
+      gender: "",
+      contact_num: "N/A",
+      civil_stat: "",
+      citizenship: "",
+      occupation: "",
+      status: ""
     });
     console.log("Resident created:", newResident);
-    res.status(201).json({ message: 'Resident created', resident: newResident });
+ res.status(201).json({ message: "Resident created", resident: newResident });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(400).json({ message: error.message });
+    console.error("Signup error:", error.name, error.message);
+     if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    res.status(500).json({ message: "Server error", error: error.message })
   }
 });
-
+router.post('/appointments', async (req, res) => {
+  const { title, date, content } = req.body;
+  if (!title || !date || !content) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+  try {
+    const appointment = await Appointment.create({ title, date, content });
+    res.status(201).json({ message: "Appointment created", appointment });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 // Login endpoint for residents
 router.post('/login', async (req, res) => {
   console.log("Login request received:", req.body);

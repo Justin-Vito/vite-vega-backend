@@ -111,5 +111,16 @@ router.get('/appointments', async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
+router.post('/announcements', authenticateToken, async (req, res) => {
+  const { title, content } = req.body;
+  if (!title || !content) {
+    return res.status(400).json({ message: "Missing title or content" });
+  }
+  try {
+    const announcement = await Announcement.create({ title, content });
+    res.status(201).json({ message: "Announcement created", announcement });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 export default router;
